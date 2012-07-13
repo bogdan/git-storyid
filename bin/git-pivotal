@@ -1,0 +1,11 @@
+#!/usr/bin/env ruby
+
+
+if File.exists?(File.join(File.expand_path('../..', __FILE__), '.git'))
+  path = File.expand_path('../../lib', __FILE__)
+  $:.unshift(path)
+end
+
+require 'git-pivotal'
+
+GitPivotal.run(*ARGV)
