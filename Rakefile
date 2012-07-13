@@ -15,6 +15,7 @@ require 'jeweler'
 Jeweler::Tasks.new do |gem|
   # gem is a Gem::Specification... see http://docs.rubygems.org/read/chapter/20 for more options
   gem.name = "git-pivotal"
+  gem.executables = ['git-pivotal']
   gem.homepage = "http://github.com/bogdan/git-pivotal"
   gem.license = "MIT"
   gem.summary = %Q{Attach commits to pivotal stories}
@@ -38,12 +39,3 @@ end
 
 task :default => :spec
 
-require 'rdoc/task'
-Rake::RDocTask.new do |rdoc|
-  version = File.exist?('VERSION') ? File.read('VERSION') : ""
-
-  rdoc.rdoc_dir = 'rdoc'
-  rdoc.title = "git-pivotal #{version}"
-  rdoc.rdoc_files.include('README*')
-  rdoc.rdoc_files.include('lib/**/*.rb')
-end
