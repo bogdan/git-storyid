@@ -1,1 +1,1 @@
-require "git_pivotal"
+require "git_storyid"

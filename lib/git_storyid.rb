@@ -55,7 +55,10 @@ class GitStoryid
       end
     end
     message = ("[#{@stories.map { |s| "\##{s.id}"}.join(", ")}]").rjust 12
-    message += ' ' + @message.to_s + "\n\n"
+    message += ' '
+    if @message && !@message.empty?
+      message += @message.to_s + "\n\n"
+    end
     message += @stories.map {|s| "Feature: " + s.name.strip}.join("\n\n")
     puts `git commit -m "#{message}"`
   end
@@ -132,25 +135,6 @@ class GitStoryid
       @project_config_path ||= find_project_config
     end
 
-    def status_icon(status)
-      {
-        'unscheduled' => ' ', 
-        'unstarted' => '.', 
-        'started' => 'S',
-        'finished' => 'F', 
-        'delivered' => 'D', 
-        'accepted' => 'A', 
-        'rejected' => 'R'
-      }[status]
-    end
-
-    def estimate_icon(estimate)
-      estimate.nil? ? '*' : ({-1 => '?', 0 => '0', 1=>'1', 2=>'2', 3 => '3'}[estimate] || "[#{estimate.inspect}]")
-    end
-
-    def type_icon(type)
-      {'feature' => 'F', 'chore' => 'C', 'bug' => 'B'}[type]
-    end
 
     private
 

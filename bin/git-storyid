@@ -6,6 +6,6 @@ if File.exists?(File.join(File.expand_path('../..', __FILE__), '.git'))
   $:.unshift(path)
 end
 
-require 'git-pivotal'
+require 'git-storyid'
 
-GitPivotal.run(*ARGV)
+GitStoryid.run(*ARGV)
