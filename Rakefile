@@ -14,9 +14,9 @@ require 'rake'
 require 'jeweler'
 Jeweler::Tasks.new do |gem|
   # gem is a Gem::Specification... see http://docs.rubygems.org/read/chapter/20 for more options
-  gem.name = "git-pivotal"
-  gem.executables = ['git-pivotal']
-  gem.homepage = "http://github.com/bogdan/git-pivotal"
+  gem.name = "git-storyid"
+  gem.executables = ['git-storyid']
+  gem.homepage = "http://github.com/bogdan/git-storyid"
   gem.license = "MIT"
   gem.summary = %Q{Attach commits to pivotal stories}
   gem.description = %Q{Helps include pivotal story id and description in commit}

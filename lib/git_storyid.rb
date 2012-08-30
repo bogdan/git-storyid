@@ -1,23 +1,22 @@
-
 require "readline"
 require "optparse"
 require "pivotal_tracker"
 require "yaml"
 
-class GitPivotal
+class GitStoryid
 
   def self.run(*args)
     new(*args).run
   end
 
   def initialize(*arguments)
-    opts = OptionParser.new do |opts|
+    parser = OptionParser.new do |opts|
       opts.banner = "Do git commit with information from pivotal story"
       opts.on("-m [MESSAGE]", "Add addional MESSAGE to comit") do |message|
         @message = message
       end
     end
-    opts.parse!
+    parser.parse!
 
     unless arguments.empty?
       @stories = arguments.map do |argument|
@@ -153,7 +152,7 @@ class GitPivotal
       {'feature' => 'F', 'chore' => 'C', 'bug' => 'B'}[type]
     end
 
-  private
+    private
 
     def find_project_config
       dirs = File.split(Dir.pwd)
@@ -166,7 +165,7 @@ class GitPivotal
         File.join(dirs)
       end
     end
-  end
+    end
   end
 
   class Error < StandardError
