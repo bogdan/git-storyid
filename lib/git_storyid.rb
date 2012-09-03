@@ -105,6 +105,7 @@ class GitStoryid
           file.write YAML.dump(@project_config)
         end
         @config.merge!(@project_config)
+        puts "Writing config to .pivotalrc"
       end
     end
 
