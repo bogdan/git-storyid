@@ -27,6 +27,7 @@ Gem::Specification.new do |s|
     "Rakefile",
     "VERSION",
     "bin/git-storyid",
+    "git-storyid.gemspec",
     "lib/git-storyid.rb",
     "lib/git_storyid.rb",
     "spec/git_storyid_spec.rb",
