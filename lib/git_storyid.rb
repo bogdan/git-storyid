@@ -16,7 +16,7 @@ class GitStoryid
         @message = message
       end
     end
-    parser.parse!
+    parser.parse!(arguments)
 
     unless arguments.empty?
       @stories = arguments.map do |argument|
@@ -54,6 +54,7 @@ class GitStoryid
 
       end
     end
+
     message = ("[#{@stories.map { |s| "\##{s.id}"}.join(", ")}]").rjust 12
     message += ' '
     if @message && !@message.empty?
