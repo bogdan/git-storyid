@@ -87,7 +87,7 @@ class GitStoryid
         "me" => "Your pivotal initials (e.g. BG)",
         "project_id" => "Project ID"
       }.each do |key, label|
-        unless @config[key]
+        if @config[key].nil?
           changed = true
           value = Readline.readline("#{label}: ", true) 
           @project_config[key]  = case value
