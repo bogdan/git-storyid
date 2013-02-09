@@ -35,7 +35,7 @@ class GitStoryid
   end
 
   def run
-    if `git diff --staged`.empty?
+    if execute("git", "diff", "--staged").empty?
       puts "No changes staged to commit."
       exit 1
     end
