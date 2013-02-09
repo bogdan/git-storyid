@@ -1,7 +1,14 @@
 require "spec_helper"
+require "fileutils"
 
 describe GitStoryid do
-  it "fails" do
-    fail "hey buddy, you should probably rename this file and start specing for real"
+
+  before(:each) do
+    FileUtils.rm_rf("spec/repo")
+    FileUtils.mkdir_p("spec/repo")
+    FileUtils.cd("spec/repo")
+    `git init`
   end
+
+
 end

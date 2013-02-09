@@ -2,6 +2,7 @@ require "readline"
 require "optparse"
 require "pivotal_tracker"
 require "yaml"
+require "open3"
 
 class GitStoryid
 
@@ -61,7 +62,11 @@ class GitStoryid
       message += @message.to_s + "\n\n"
     end
     message += @stories.map {|s| "Feature: " + s.name.strip}.join("\n\n")
-    puts `git commit -m "#{message}"`
+    puts execute("git", "commit", "-m", message)
+  end
+
+  def execute(*args)
+    Open3.popen3(*args) {|i, o| return o.read }
   end
 
 
@@ -70,13 +75,21 @@ class GitStoryid
     class << self
     def read
       return if @loaded
+      load_config
+      ensure_full_config
+      setup_api_client
+      @loaded = true
+    end
+
+    def load_config
       @config = load_config_from(global_config_path)
       @project_config = load_config_from(project_config_path)
       @config.merge!(@project_config)
-      ensure_full_config
+    end
+
+    def setup_api_client
       PivotalTracker::Client.token = @config['api_token']
       PivotalTracker::Client.use_ssl = @config['use_ssl'] ? @config['use_ssl'] : false
-      @loaded = true
     end
 
     def ensure_full_config
@@ -90,14 +103,7 @@ class GitStoryid
         if @config[key].nil?
           changed = true
           value = Readline.readline("#{label}: ", true) 
-          @project_config[key]  = case value
-                                  when "y"
-                                    true
-                                  when "n"
-                                    false
-                                  else
-                                    value
-                                  end
+          @project_config[key]  = format_config_value(value)
         end
       end
       if changed
@@ -106,6 +112,17 @@ class GitStoryid
         end
         @config.merge!(@project_config)
         puts "Writing config to .pivotalrc"
+      end
+    end
+
+    def format_config_value(value)
+      case value
+      when "y"
+        true
+      when "n"
+        false
+      else
+        value
       end
     end
 
