@@ -4,14 +4,15 @@
 # -*- encoding: utf-8 -*-
 
 Gem::Specification.new do |s|
-  s.name = "git-storyid"
-  s.version = "0.2.0"
+  s.name = %q{git-storyid}
+  s.version = "0.2.1"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Bogdan Gusiev"]
-  s.date = "2013-02-09"
-  s.description = "Helps include pivotal story id and description in commit"
-  s.email = "agresso@gmail.com"
+  s.date = %q{2013-02-19}
+  s.default_executable = %q{git-storyid}
+  s.description = %q{Helps include pivotal story id and description in commit}
+  s.email = %q{agresso@gmail.com}
   s.executables = ["git-storyid"]
   s.extra_rdoc_files = [
     "LICENSE.txt",
@@ -33,11 +34,11 @@ Gem::Specification.new do |s|
     "spec/git_storyid_spec.rb",
     "spec/spec_helper.rb"
   ]
-  s.homepage = "http://github.com/bogdan/git-storyid"
+  s.homepage = %q{http://github.com/bogdan/git-storyid}
   s.licenses = ["MIT"]
   s.require_paths = ["lib"]
-  s.rubygems_version = "1.8.24"
-  s.summary = "Attach commits to pivotal stories"
+  s.rubygems_version = %q{1.6.0}
+  s.summary = %q{Attach commits to pivotal stories}
 
   if s.respond_to? :specification_version then
     s.specification_version = 3
