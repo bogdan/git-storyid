@@ -34,27 +34,34 @@ class GitStoryid
     )
   end
 
+  def readline_stories_if_not_present
+    return if @stories
+    if all_stories.empty?
+      quit "No stories started and owned by you."
+    end
+    all_stories.each_with_index do |story, index|
+      puts "[#{index + 1}] #{story.name}"
+    end
+    puts ""
+    @stories  = Readline.readline("Indexes(csv): ", true).split(/\s*,\s*/).reject do |string|
+      string == ""
+    end.map do |string|
+      index = string.to_i
+      all_stories[index - 1] || (quit("Story index #{index} not found."))
+    end
+  end
+
+  def quit(message)
+    puts message
+    exit 1
+  end
+
   def run
     if execute("git", "diff", "--staged").empty?
-      puts "No changes staged to commit."
-      exit 1
+      quit "No changes staged to commit."
     end
 
-    unless @stories
-      unless all_stories.empty?
-        all_stories.each_with_index do |story, index|
-          puts "[#{index + 1}] #{story.name}"
-        end
-        puts ""
-        @stories  = Readline.readline("Indexes(csv): ", true).split(/\s*,\s*/).reject do |string|
-          string == ""
-        end.map do |string|
-          index = string.to_i
-          all_stories[index - 1] || (return puts("Story index #{index} not found."))
-        end
-
-      end
-    end
+    readline_stories_if_not_present
 
     message = ("[#{@stories.map { |s| "\##{s.id}"}.join(", ")}]").rjust 12
     message += ' '
