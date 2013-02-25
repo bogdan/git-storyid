@@ -36,17 +36,32 @@ class GitStoryid
   end
 
   def readline_stories_if_not_present
-    return if @stories
+    if !@stories || @stories.empty?
+      quit_if_no_stories
+      output stories_menu
+      @stories  = readline_story_ids.map do |index|
+        all_stories[index - 1] || (quit("Story index #{index} not found."))
+      end
+    end
+  end
+
+  def output(message)
+    puts message
+  end
+
+  def quit_if_no_stories
     if all_stories.empty?
       quit "No stories started and owned by you."
     end
+  end
+
+  def stories_menu
+    result = ""
     all_stories.each_with_index do |story, index|
-      puts "[#{index + 1}] #{story.name}"
+      result << "[#{index + 1}] #{story.name}\n"
     end
-    puts ""
-    @stories  = readline_story_ids.map do |index|
-      all_stories[index - 1] || (quit("Story index #{index} not found."))
-    end
+    result << "\n"
+    result
   end
 
   def readline_story_ids
@@ -56,7 +71,7 @@ class GitStoryid
   end
 
   def quit(message)
-    puts message
+    output message
     exit 1
   end
 
@@ -67,7 +82,7 @@ class GitStoryid
   end
 
   def commit_changes
-    puts execute("git", "commit", "-m", build_commit_message)
+    output execute("git", "commit", "-m", build_commit_message)
   end
 
   def build_commit_message
@@ -137,7 +152,7 @@ class GitStoryid
           file.write YAML.dump(@project_config)
         end
         @config.merge!(@project_config)
-        puts "Writing config to .pivotalrc"
+        output "Writing config to .pivotalrc"
       end
     end
 

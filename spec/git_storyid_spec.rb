@@ -24,6 +24,7 @@ describe GitStoryid do
 
     GitStoryid.any_instance.stubs(:ensure_changes_stashed!).returns(true)
     GitStoryid.any_instance.stubs(:readline_story_ids).returns([1])
+    GitStoryid.any_instance.stubs(:output).returns(true)
 
     GitStoryid::Configuration.stubs(:project).returns(Hashie::Mash.new(
       :initial_velocity => 10,
@@ -63,6 +64,27 @@ describe GitStoryid do
         :attachments => [],
         :project_id => 135657,
         :jira_url => nil,
+        :current_state => "finished",
+      ),
+      Hashie::Mash.new(
+        :deadline => nil,
+        :labels => "paypal",
+        :accepted_at => nil,
+        :id => 44647732,
+        :jira_id => nil,
+        :estimate => 1,
+        :integration_id => nil,
+        :owned_by => "Bogdan Gusiev",
+        :name => "Require pro paypal account for mass payments",
+        :created_at => DateTime.now,
+        :story_type => "feature",
+        :other_id => nil,
+        :description => "",
+        :requested_by => "Dominic Coryell",
+        :url => "http://www.pivotaltracker.com/story/show/44647732",
+        :attachments => [],
+        :project_id => 135657,
+        :jira_url => nil,
         :current_state => "finished"
       )
     ])
@@ -72,6 +94,15 @@ describe GitStoryid do
     run("-m",  'Hello world')
     commands.should include(["git", "commit", "-m", " [#44647731] Hello world\n\nFeature: Strip Default paypal credentials"])
   end
+
+  it "should render stories menu correctly" do
+    subject.stories_menu.should == <<-EOI
+[1] Strip Default paypal credentials
+[2] Require pro paypal account for mass payments
+
+EOI
+  end
+
 
 
 
