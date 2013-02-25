@@ -11,10 +11,11 @@ class GitStoryid
   end
 
   def initialize(*arguments)
+    @git_options = []
     parser = OptionParser.new do |opts|
       opts.banner = "Do git commit with information from pivotal story"
-      opts.on("-m [MESSAGE]", "Add addional MESSAGE to comit") do |message|
-        @message = message
+      opts.on("-m", "--message [MESSAGE]", "Add addional MESSAGE to comit") do |custom_message|
+        @custom_message = custom_message
       end
     end
     parser.parse!(arguments)
@@ -43,12 +44,15 @@ class GitStoryid
       puts "[#{index + 1}] #{story.name}"
     end
     puts ""
-    @stories  = Readline.readline("Indexes(csv): ", true).split(/\s*,\s*/).reject do |string|
-      string == ""
-    end.map do |string|
-      index = string.to_i
+    @stories  = readline_story_ids.map do |index|
       all_stories[index - 1] || (quit("Story index #{index} not found."))
     end
+  end
+
+  def readline_story_ids
+    Readline.readline("Indexes(csv): ", true).split(/\s*,\s*/).reject do |string|
+      string == ""
+    end.map {|id| id.to_i }
   end
 
   def quit(message)
@@ -57,29 +61,43 @@ class GitStoryid
   end
 
   def run
-    if execute("git", "diff", "--staged").empty?
-      quit "No changes staged to commit."
-    end
-
+    ensure_changes_stashed!
     readline_stories_if_not_present
+    commit_changes
+  end
 
+  def commit_changes
+    puts execute("git", "commit", "-m", build_commit_message)
+  end
+
+  def build_commit_message
     message = ("[#{@stories.map { |s| "\##{s.id}"}.join(", ")}]").rjust 12
     message += ' '
-    if @message && !@message.empty?
-      message += @message.to_s + "\n\n"
+    if @custom_message && !@custom_message.empty?
+      message += @custom_message.to_s + "\n\n"
     end
-    message += @stories.map {|s| "Feature: " + s.name.strip}.join("\n\n")
-    puts execute("git", "commit", "-m", message)
+    message += @stories.map {|s| "#{s.story_type.capitalize}: " + s.name.strip}.join("\n\n")
+    message
   end
 
   def execute(*args)
     Open3.popen3(*args) {|i, o| return o.read }
   end
 
+  def ensure_changes_stashed!
+    if execute("git", "diff", "--staged").empty?
+      quit "No changes staged to commit."
+    end
+  end
 
 
   module Configuration
     class << self
+
+    def config=(config)
+      @config = config
+    end
+
     def read
       return if @loaded
       load_config
@@ -89,7 +107,8 @@ class GitStoryid
     end
 
     def load_config
-      @config = load_config_from(global_config_path)
+      @config ||= {}
+      @config.merge!(load_config_from(global_config_path))
       @project_config = load_config_from(project_config_path)
       @config.merge!(@project_config)
     end
