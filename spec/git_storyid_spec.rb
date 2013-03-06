@@ -64,7 +64,7 @@ describe GitStoryid do
         :attachments => [],
         :project_id => 135657,
         :jira_url => nil,
-        :current_state => "finished",
+        :current_state => "finished"
       ),
       Hashie::Mash.new(
         :deadline => nil,
