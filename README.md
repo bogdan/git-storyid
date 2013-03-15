@@ -21,14 +21,29 @@ git storyid -m "Commit message"
 Interactive menu to select an ID of **Started stories**
 
 ```
-[1] После обновления статуса заказа из 1с на сайте этот заказ снова попадает в результаты апи заказов.
-[2] Таблица размеров
-[3] Добавить редактирование ProductCategory#size_metric_name в админку
-[4] Добавить новую информацию из 1с по карточке товара
-[5] все товары с образа в корзину (с выбором размера вместо мэин варианта)
-[6] В администраторе, в фотографиях неработает фильтр "ID"
+[1] Removing Billing Page
+[2] Welcome Email
+[3] Email Shares -  Capture
+[4] Speed up activities by dates aggregation
+[5] Mass Email to Customer List - thurs AM
+[6] Investigate production error
+[7] Tag campaign insertion points and campaigns with an identifier, so only campaigns with matching identifier will get shown
 
-Indexes(csv): 6
-[master 6a03823]  [#35311801] Feature: В администраторе, в фотографиях неработает фильтр ID
- 1 file changed, 1 insertion(+)
+Indexes(csv): 7
+[campaign-tags 3020407]  [#44116647] Relabel
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+```
+
+Result commit:
+
+```
+commit 3020407e92cb125083cf50ad494ff15169a7f2e6
+Author: Bogdan Gusiev <agresso@gmail.com>
+Date:   Fri Mar 15 12:42:32 2013 +0200
+
+[#44116647] Relabel
+
+Feature: Tag campaign insertion points and 
+campaigns with an identifier, 
+so only campaigns with matching identifier will get shown
 ```
