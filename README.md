@@ -30,7 +30,7 @@ Interactive menu to select an ID of **Started stories**
 [7] Tag campaign insertion points and campaigns with an identifier, so only campaigns with matching identifier will get shown
 
 Indexes(csv): 7
-[campaign-tags 3020407]  [#44116647] Relabel
+[campaign-tags 3020407]  [#44116647] Initial implementation of campaign tags
  1 file changed, 1 insertion(+), 2 deletions(-)
 ```
 
