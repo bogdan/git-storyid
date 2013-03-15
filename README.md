@@ -27,7 +27,7 @@ Interactive menu to select an ID of **Started stories**
 [4] Speed up activities by dates aggregation
 [5] Mass Email to Customer List - thurs AM
 [6] Investigate production error
-[7] Tag campaign insertion points and campaigns with an identifier, so only campaigns with matching identifier will get shown
+[7] Tag campaign insertion points and campaigns with an identifier
 
 Indexes(csv): 7
 [campaign-tags 3020407]  [#44116647] Initial implementation of campaign tags
