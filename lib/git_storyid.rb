@@ -39,7 +39,7 @@ class GitStoryid
     if !@stories || @stories.empty?
       quit_if_no_stories
       output stories_menu
-      @stories  = readline_story_ids.map do |index|
+      @stories = readline_story_ids.map do |index|
         all_stories[index - 1] || (quit("Story index #{index} not found."))
       end
     end
@@ -65,9 +65,15 @@ class GitStoryid
   end
 
   def readline_story_ids
-    Readline.readline("Indexes(csv): ", true).split(/\s*,\s*/).reject do |string|
-      string == ""
-    end.map {|id| id.to_i }
+    ids = readline.split(/\s*,\s*/).reject do |string|
+      string.empty?
+    end
+    quit("Cancelling.") if ids.empty?
+    ids.map {|id| id.to_i }
+  end
+
+  def readline
+    Readline.readline("Indexes(csv): ", true)
   end
 
   def quit(message)
