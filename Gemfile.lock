@@ -38,7 +38,7 @@ GEM
       nokogiri (~> 1.4)
       rest-client (~> 1.6.0)
       rest-client (~> 1.6.0)
-    rake (10.2.2)
+    rake (10.3.2)
     rdoc (4.1.1)
       json (~> 1.4)
     rest-client (1.6.7)

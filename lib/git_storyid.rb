@@ -17,6 +17,9 @@ class GitStoryid
       opts.on("-m", "--message [MESSAGE]", "Add addional MESSAGE to comit") do |custom_message|
         @custom_message = custom_message
       end
+      opts.on("-f", "--finish", "Specify that this commit finishes a story or fixes a bug") do 
+        @finish_stories = true
+      end
     end
     parser.parse!(arguments)
 
@@ -40,7 +43,12 @@ class GitStoryid
       quit_if_no_stories
       output stories_menu
       @stories = readline_story_ids.map do |index|
-        all_stories[index - 1] || (quit("Story index #{index} not found."))
+        if index > 1_000_000
+          # Consider it a direct story id
+          Configuration.project.stories.find(index)
+        else
+          all_stories[index - 1] || (quit("Story index #{index} not found."))
+        end
       end
     end
   end
@@ -92,13 +100,23 @@ class GitStoryid
   end
 
   def build_commit_message
-    message = ("[#{@stories.map { |s| "\##{s.id}"}.join(", ")}]").rjust 12
+    message = @stories.map do |story|
+      "#{finish_story_prefix(story)}##{story.id}"
+    end.join(", ")
+    message = "[#{message}]".rjust(12)
     message += ' '
     if @custom_message && !@custom_message.empty?
       message += @custom_message.to_s + "\n\n"
     end
-    message += @stories.map {|s| "#{s.story_type.capitalize}: " + s.name.strip}.join("\n\n")
+    message += @stories.map do |story|
+      "#{story.story_type.capitalize}: " + story.name.strip
+    end.join("\n\n")
     message
+  end
+
+  def finish_story_prefix(story)
+    return "" unless @finish_stories
+    story.story_type == "bug" ? "Fixes " : "Finishes "
   end
 
   def execute(*args)

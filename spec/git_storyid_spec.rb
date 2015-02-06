@@ -102,13 +102,9 @@ describe GitStoryid do
   end
 
   context "when stories exists" do
-    
-    before(:each) do
-
-      GitStoryid.any_instance.stubs(:readline).returns('1')
-    end
 
     it "should commit changes" do
+      GitStoryid.any_instance.stubs(:readline).returns('1')
       run("-m",  'Hello world')
       commands.should include(["git", "commit", "-m", " [#44647731] Hello world\n\nFeature: Strip Default paypal credentials"])
     end
@@ -119,6 +115,21 @@ describe GitStoryid do
 [2] Require pro paypal account for mass payments
 
 EOI
+    end
+
+    it "should commit to multiple stories" do
+      GitStoryid.any_instance.stubs(:readline).returns('1,2')
+      run("-m",  'Hello world')
+      commands.should include(
+        ["git", "commit", "-m",
+          "[#44647731, #44647732] Hello world\n\nFeature: Strip Default paypal credentials\n\nFeature: Require pro paypal account for mass payments"]
+      )
+    end
+
+    it "should support finishing" do
+      GitStoryid.any_instance.stubs(:readline).returns('1')
+      run('-f', "-m",  'Hello world')
+      commands.should include(["git", "commit", "-m", "[Finishes #44647731] Hello world\n\nFeature: Strip Default paypal credentials"])
     end
   end
 
