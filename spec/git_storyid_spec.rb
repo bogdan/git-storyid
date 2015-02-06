@@ -131,6 +131,12 @@ EOI
       run('-f')
       commands.should include(["git", "commit", "-m", "[Finishes #44647731] Feature: Strip Default paypal credentials"])
     end
+
+    it "should support delivering" do
+      GitStoryid.any_instance.stubs(:readline).returns('1')
+      run('-d')
+      commands.should include(["git", "commit", "-m", "[Delivers #44647731] Feature: Strip Default paypal credentials"])
+    end
   end
 
   it "should quit if no stories specified" do

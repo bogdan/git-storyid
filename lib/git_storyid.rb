@@ -20,6 +20,9 @@ class GitStoryid
       opts.on("-f", "--finish", "Specify that this commit finishes a story or fixes a bug") do 
         @finish_stories = true
       end
+      opts.on("-d", "--deliver", "Specify that this commit delivers a story or a bug") do 
+        @deliver_stories = true
+      end
     end
     parser.parse!(arguments)
 
@@ -114,6 +117,7 @@ class GitStoryid
   end
 
   def finish_story_prefix(story)
+    return "Delivers " if @deliver_stories
     return "" unless @finish_stories
     story.story_type == "bug" ? "Fixes " : "Finishes "
   end
