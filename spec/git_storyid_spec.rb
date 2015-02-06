@@ -106,7 +106,7 @@ describe GitStoryid do
     it "should commit changes" do
       GitStoryid.any_instance.stubs(:readline).returns('1')
       run("-m",  'Hello world')
-      commands.should include(["git", "commit", "-m", " [#44647731] Hello world\n\nFeature: Strip Default paypal credentials"])
+      commands.should include(["git", "commit", "-m", "[#44647731] Hello world\n\nFeature: Strip Default paypal credentials"])
     end
 
     it "should render stories menu correctly" do
@@ -128,8 +128,8 @@ EOI
 
     it "should support finishing" do
       GitStoryid.any_instance.stubs(:readline).returns('1')
-      run('-f', "-m",  'Hello world')
-      commands.should include(["git", "commit", "-m", "[Finishes #44647731] Hello world\n\nFeature: Strip Default paypal credentials"])
+      run('-f')
+      commands.should include(["git", "commit", "-m", "[Finishes #44647731] Feature: Strip Default paypal credentials"])
     end
   end
 
