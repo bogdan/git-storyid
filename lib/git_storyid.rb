@@ -103,8 +103,7 @@ class GitStoryid
     message = @stories.map do |story|
       "#{finish_story_prefix(story)}##{story.id}"
     end.join(", ")
-    message = "[#{message}]"
-    message += ' '
+    message = "[#{message}] "
     if @custom_message && !@custom_message.empty?
       message += @custom_message.to_s + "\n\n"
     end
