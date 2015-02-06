@@ -47,3 +47,11 @@ Feature: Tag campaign insertion points and
 campaigns with an identifier, 
 so only campaigns with matching identifier will get shown
 ```
+
+## Supported options
+
+```
+-m, --message [MESSAGE]          Add addional MESSAGE to comit
+-f, --finish                     Specify that this commit finishes a story or fixes a bug
+-d, --deliver                    Specify that this commit delivers a story or a bug
+```
