@@ -17,10 +17,10 @@ class GitStoryid
       opts.on("-m", "--message [MESSAGE]", "Add addional MESSAGE to comit") do |custom_message|
         @custom_message = custom_message
       end
-      opts.on("-f", "--finish", "Specify that this commit finishes a story or fixes a bug") do 
+      opts.on("-f", "--finish", "Specify that this commit finishes a story or fixes a bug") do
         @finish_stories = true
       end
-      opts.on("-d", "--deliver", "Specify that this commit delivers a story or a bug") do 
+      opts.on("-d", "--deliver", "Specify that this commit delivers a story or a bug") do
         @deliver_stories = true
       end
     end
@@ -28,13 +28,13 @@ class GitStoryid
 
     unless arguments.empty?
       @stories = arguments.map do |argument|
-        Configuration.project.stories.find(argument) 
+        Configuration.project.stories.find(argument)
       end
     end
   end
 
   def all_stories
-    @all_stories ||= Configuration.project.stories.all( 
+    @all_stories ||= Configuration.project.stories.all(
       :owner => Configuration.me,
       :state => %w(started finished delivered),
       :limit => 30
@@ -54,6 +54,9 @@ class GitStoryid
         end
       end
     end
+  rescue RefetchStories
+    @all_stories = nil
+    readline_stories_if_not_present
   end
 
   def output(message)
@@ -76,7 +79,11 @@ class GitStoryid
   end
 
   def readline_story_ids
-    ids = readline.split(/\s*,\s*/).reject do |string|
+    input = readline
+    if input =~ /\A\s*re?f?r?e?s?h?\s*\z/
+      raise RefetchStories
+    end
+    ids = input.split(/\s*,\s*/).reject do |string|
       string.empty?
     end
     quit("Cancelling.") if ids.empty?
@@ -84,7 +91,7 @@ class GitStoryid
   end
 
   def readline
-    Readline.readline("Indexes(csv): ", true)
+    Readline.readline("Indexes: ", true)
   end
 
   def quit(message)
@@ -170,7 +177,7 @@ class GitStoryid
       }.each do |key, label|
         if @config[key].nil?
           changed = true
-          value = Readline.readline("#{label}: ", true) 
+          value = Readline.readline("#{label}: ", true)
           @project_config[key]  = format_config_value(value)
         end
       end
@@ -199,7 +206,7 @@ class GitStoryid
       file = File.join path,'.pivotalrc'
       if File.exists?(file)
         YAML.load(File.read(file)) || {}
-      else 
+      else
         {}
       end
     end
@@ -240,5 +247,8 @@ class GitStoryid
   end
 
   class Error < StandardError
+  end
+
+  class RefetchStories < StandardError
   end
 end

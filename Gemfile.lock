@@ -31,12 +31,9 @@ GEM
     nokogiri (1.5.5)
     pivotal-tracker (0.5.4)
       builder
-      builder
-      happymapper (>= 0.3.2)
       happymapper (>= 0.3.2)
       nokogiri (>= 1.4.3)
       nokogiri (~> 1.4)
-      rest-client (~> 1.6.0)
       rest-client (~> 1.6.0)
     rake (10.3.2)
     rdoc (4.1.1)
