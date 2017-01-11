@@ -9,26 +9,35 @@ describe GitStoryid do
     GitStoryid.run(*args)
   end
 
+  class ForceQuit < StandardError
+  end
+
   def should_quit_with(expected)
     actual = nil
     GitStoryid.send(:define_method, :quit) do |message|
       actual = message
+      raise ForceQuit
     end
     yield
+    true.should eq(false)
+  rescue ForceQuit
     actual.should_not be_nil
     actual.should == expected
 
   end
 
 
+  describe "Pivotal" do
+
   before(:each) do
-    
-    GitStoryid::Configuration.config = {
-      "api_token" => "a2b4e",
-      "use_ssl" => false,
-      "me" => "BG",
-      "project_id" => "1234"
-    }
+
+    GitStoryid::Configuration.stubs(:load_config_from).
+      returns(
+        engine: "pivotal",
+        api_token: "a2b4e",
+        me: "BG",
+        project_id: "1234",
+    )
     commands = self.commands
     GitStoryid.send(:define_method, :execute) do |*args|
       commands << args
@@ -37,25 +46,7 @@ describe GitStoryid do
     GitStoryid.any_instance.stubs(:ensure_changes_stashed!).returns(true)
       GitStoryid.any_instance.stubs(:output).returns(true)
 
-      GitStoryid::Configuration.stubs(:project).returns(Hashie::Mash.new(
-        :initial_velocity => 10,
-        :labels => "bonobos,true&co,website",
-        :id => 135657,
-        :week_start_day => "Monday",
-        :use_https => false,
-        :iteration_length => 1,
-        :account => "Allan Grant",
-        :name => "Curebit Marketing",
-        :stories => PivotalTracker::Story,
-        :last_activity_at => DateTime.now,
-        :velocity_scheme => "Average of 3 iterations",
-        :current_iteration_number => 122,
-        :current_velocity => 19,
-        :point_scale => "0,1,2,3",
-        :first_iteration_start_time => DateTime.now
-      ))
-
-      GitStoryid.any_instance.stubs(:all_stories).returns([
+      GitStoryid::PivotalConfiguration.any_instance.stubs(:fetch_all_stories).returns([
         Hashie::Mash.new(
           :deadline => nil,
           :labels => "paypal",
@@ -147,6 +138,7 @@ EOI
   end
 
 
+  end
 
 
 end

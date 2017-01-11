@@ -5,16 +5,16 @@
 # stub: git-storyid 0.3.5 ruby lib
 
 Gem::Specification.new do |s|
-  s.name = "git-storyid"
+  s.name = "git-storyid".freeze
   s.version = "0.3.5"
 
-  s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
-  s.require_paths = ["lib"]
-  s.authors = ["Bogdan Gusiev"]
-  s.date = "2016-01-13"
-  s.description = "Helps include pivotal story id and description in commit"
-  s.email = "agresso@gmail.com"
-  s.executables = ["git-storyid"]
+  s.required_rubygems_version = Gem::Requirement.new(">= 0".freeze) if s.respond_to? :required_rubygems_version=
+  s.require_paths = ["lib".freeze]
+  s.authors = ["Bogdan Gusiev".freeze]
+  s.date = "2017-01-11"
+  s.description = "Helps include pivotal story id and description in commit".freeze
+  s.email = "agresso@gmail.com".freeze
+  s.executables = ["git-storyid".freeze]
   s.extra_rdoc_files = [
     "LICENSE.txt",
     "README.md"
@@ -35,39 +35,48 @@ Gem::Specification.new do |s|
     "spec/git_storyid_spec.rb",
     "spec/spec_helper.rb"
   ]
-  s.homepage = "http://github.com/bogdan/git-storyid"
-  s.licenses = ["MIT"]
-  s.rubygems_version = "2.4.7"
-  s.summary = "Attach commits to pivotal stories"
+  s.homepage = "http://github.com/bogdan/git-storyid".freeze
+  s.licenses = ["MIT".freeze]
+  s.rubygems_version = "2.6.7".freeze
+  s.summary = "Attach commits to pivotal stories".freeze
 
   if s.respond_to? :specification_version then
     s.specification_version = 4
 
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
-      s.add_runtime_dependency(%q<pivotal-tracker>, [">= 0"])
-      s.add_development_dependency(%q<webmock>, [">= 0"])
-      s.add_development_dependency(%q<debugger>, [">= 0"])
-      s.add_development_dependency(%q<mocha>, [">= 0"])
-      s.add_development_dependency(%q<rspec>, [">= 0"])
-      s.add_development_dependency(%q<jeweler>, [">= 0"])
-      s.add_development_dependency(%q<hashie>, [">= 0"])
+      s.add_runtime_dependency(%q<pivotal-tracker>.freeze, [">= 0"])
+      s.add_runtime_dependency(%q<jira-ruby>.freeze, [">= 0"])
+      s.add_development_dependency(%q<webmock>.freeze, [">= 0"])
+      s.add_development_dependency(%q<debugger>.freeze, [">= 0"])
+      s.add_development_dependency(%q<mocha>.freeze, [">= 0"])
+      s.add_development_dependency(%q<rspec>.freeze, [">= 0"])
+      s.add_development_dependency(%q<jeweler>.freeze, [">= 0"])
+      s.add_development_dependency(%q<hashie>.freeze, [">= 0"])
+      s.add_development_dependency(%q<pry-byebug>.freeze, [">= 0"])
+      s.add_development_dependency(%q<http_logger>.freeze, [">= 0"])
     else
-      s.add_dependency(%q<pivotal-tracker>, [">= 0"])
-      s.add_dependency(%q<webmock>, [">= 0"])
-      s.add_dependency(%q<debugger>, [">= 0"])
-      s.add_dependency(%q<mocha>, [">= 0"])
-      s.add_dependency(%q<rspec>, [">= 0"])
-      s.add_dependency(%q<jeweler>, [">= 0"])
-      s.add_dependency(%q<hashie>, [">= 0"])
+      s.add_dependency(%q<pivotal-tracker>.freeze, [">= 0"])
+      s.add_dependency(%q<jira-ruby>.freeze, [">= 0"])
+      s.add_dependency(%q<webmock>.freeze, [">= 0"])
+      s.add_dependency(%q<debugger>.freeze, [">= 0"])
+      s.add_dependency(%q<mocha>.freeze, [">= 0"])
+      s.add_dependency(%q<rspec>.freeze, [">= 0"])
+      s.add_dependency(%q<jeweler>.freeze, [">= 0"])
+      s.add_dependency(%q<hashie>.freeze, [">= 0"])
+      s.add_dependency(%q<pry-byebug>.freeze, [">= 0"])
+      s.add_dependency(%q<http_logger>.freeze, [">= 0"])
     end
   else
-    s.add_dependency(%q<pivotal-tracker>, [">= 0"])
-    s.add_dependency(%q<webmock>, [">= 0"])
-    s.add_dependency(%q<debugger>, [">= 0"])
-    s.add_dependency(%q<mocha>, [">= 0"])
-    s.add_dependency(%q<rspec>, [">= 0"])
-    s.add_dependency(%q<jeweler>, [">= 0"])
-    s.add_dependency(%q<hashie>, [">= 0"])
+    s.add_dependency(%q<pivotal-tracker>.freeze, [">= 0"])
+    s.add_dependency(%q<jira-ruby>.freeze, [">= 0"])
+    s.add_dependency(%q<webmock>.freeze, [">= 0"])
+    s.add_dependency(%q<debugger>.freeze, [">= 0"])
+    s.add_dependency(%q<mocha>.freeze, [">= 0"])
+    s.add_dependency(%q<rspec>.freeze, [">= 0"])
+    s.add_dependency(%q<jeweler>.freeze, [">= 0"])
+    s.add_dependency(%q<hashie>.freeze, [">= 0"])
+    s.add_dependency(%q<pry-byebug>.freeze, [">= 0"])
+    s.add_dependency(%q<http_logger>.freeze, [">= 0"])
   end
 end
 

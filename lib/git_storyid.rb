@@ -1,8 +1,8 @@
 require "readline"
 require "optparse"
-require "pivotal_tracker"
 require "yaml"
 require "open3"
+require 'io/console'
 
 class GitStoryid
 
@@ -10,7 +10,17 @@ class GitStoryid
     new(*args).run
   end
 
+  def self.output(message)
+    puts message
+  end
+
+  def output(message)
+    self.class.output(message)
+  end
+
+
   def initialize(*arguments)
+    @tracker = Configuration.build
     @git_options = []
     parser = OptionParser.new do |opts|
       opts.banner = "Do git commit with information from pivotal story"
@@ -28,17 +38,9 @@ class GitStoryid
 
     unless arguments.empty?
       @stories = arguments.map do |argument|
-        Configuration.project.stories.find(argument)
+        @tracker.find_story_by_id(argument)
       end
     end
-  end
-
-  def all_stories
-    @all_stories ||= Configuration.project.stories.all(
-      :owner => Configuration.me,
-      :state => %w(started finished delivered),
-      :limit => 30
-    )
   end
 
   def readline_stories_if_not_present
@@ -46,32 +48,33 @@ class GitStoryid
       quit_if_no_stories
       output stories_menu
       @stories = readline_story_ids.map do |index|
-        if index > 1_000_000
-          # Consider it a direct story id
-          Configuration.project.stories.find(index)
-        else
-          all_stories[index - 1] || (quit("Story index #{index} not found."))
-        end
+        fetch_story(index) || quit("Story #{index} was not found.")
       end
     end
   rescue RefetchStories
-    @all_stories = nil
+    @tracker.reset
+    @stories = nil
     readline_stories_if_not_present
   end
 
-  def output(message)
-    puts message
+  def fetch_story(index)
+    if (1..100).include?(index.to_i)
+      @tracker.all_stories[index.to_i - 1]
+    else
+      # Consider it a direct story id
+      @tracker.find_story_by_id(index)
+    end
   end
 
   def quit_if_no_stories
-    if all_stories.empty?
+    if @tracker.all_stories.empty?
       quit "No stories started and owned by you."
     end
   end
 
   def stories_menu
     result = ""
-    all_stories.each_with_index do |story, index|
+    @tracker.all_stories.each_with_index do |story, index|
       result << "[#{index + 1}] #{story.name}\n"
     end
     result << "\n"
@@ -86,8 +89,11 @@ class GitStoryid
     ids = input.split(/\s*,\s*/).reject do |string|
       string.empty?
     end
-    quit("Cancelling.") if ids.empty?
-    ids.map {|id| id.to_i }
+    if ids.empty?
+      quit("Cancelling.")
+    else
+      ids
+    end
   end
 
   def readline
@@ -118,7 +124,7 @@ class GitStoryid
       message += @custom_message.to_s + "\n\n"
     end
     message += @stories.map do |story|
-      "#{story.story_type.capitalize}: " + story.name.strip
+      "#{story.type.capitalize}: " + story.name.strip
     end.join("\n\n")
     message
   end
@@ -126,7 +132,7 @@ class GitStoryid
   def finish_story_prefix(story)
     return "Delivers " if @deliver_stories
     return "" unless @finish_stories
-    story.story_type == "bug" ? "Fixes " : "Finishes "
+    story.type == "bug" ? "Fixes " : "Finishes "
   end
 
   def execute(*args)
@@ -139,111 +145,186 @@ class GitStoryid
     end
   end
 
+  class Configuration
 
-  module Configuration
-    class << self
-
-    def config=(config)
-      @config = config
-    end
-
-    def read
-      return if @loaded
+    def self.build
       load_config
       ensure_full_config
-      setup_api_client
-      @loaded = true
+      TRACKER_CONFIG[engine][:class].new(@config)
     end
 
-    def load_config
-      @config ||= {}
-      @config.merge!(load_config_from(global_config_path))
-      @project_config = load_config_from(project_config_path)
-      @config.merge!(@project_config)
+    class << self
+
+      def load_config
+        @config ||= load_config_from
+      end
+
+      def engine
+        e = @config[:engine]
+        e ? e.to_sym : nil
+      end
+
+      def ensure_full_config
+        @config[:engine] = read_configuration_value("Engine (pivotal/jira)") unless engine
+        tracker_config = TRACKER_CONFIG[engine]
+
+        return if tracker_config && @config.keys.sort == (tracker_config[:options].keys + [:engine]).sort
+
+        tracker_config[:options].each do |key, label|
+          @config[key] = read_configuration_value(label, key == :password)
+        end
+
+        File.open(project_config_path, "w") do |file|
+          file.write YAML.dump(@config)
+        end
+        output "Writing config to #{project_config_path}"
+      end
+
+      def read_configuration_value(label, hidden = false)
+        label = "#{label}: "
+        if hidden
+          print label
+          password = STDIN.noecho(&:gets).chomp
+          puts ''
+          password
+        else
+          Readline.readline(label, true)
+        end
+      end
+
+      def load_config_from
+        return {} unless project_config_path
+        if File.exists?(project_config_path)
+          YAML.load(File.read(project_config_path)) || {}
+        else
+          {}
+        end
+      end
+
+      def project_config_path
+        @project_config_path ||= find_project_config
+      end
+      def find_project_config
+        dirs = File.split(Dir.pwd)
+        until dirs.empty? || File.exists?(File.join(dirs, FILENAME))
+          dirs.pop
+        end
+        unless dirs.empty?
+          File.join(dirs, FILENAME)
+        else
+          File.join(Dir.pwd, FILENAME)
+        end
+      end
     end
+
+    def initialize(config)
+      @config = config
+      setup_api_client
+    end
+
+    def all_stories
+      @all_stories ||= fetch_all_stories.map do |story|
+        serialize_issue(story)
+      end
+    end
+
+    def reset
+      @all_stories = nil
+    end
+
+    def self.output(message)
+      GitStoryid.output(message)
+    end
+
+
+    FILENAME = %w(.git-storyid)
+
+  end
+
+  class SerializedIssue < Struct.new(:id, :type, :name)
+  end
+  class PivotalConfiguration < Configuration
 
     def setup_api_client
+      require "pivotal_tracker"
       PivotalTracker::Client.token = @config['api_token']
-      PivotalTracker::Client.use_ssl = @config['use_ssl'] ? @config['use_ssl'] : false
-    end
-
-    def ensure_full_config
-      changed = false
-      {
-        "api_token" => "Api token (https://www.pivotaltracker.com/profile)",
-        "use_ssl" => "Use SSL (y/n)",
-        "me" => "Your pivotal initials (e.g. BG)",
-        "project_id" => "Project ID"
-      }.each do |key, label|
-        if @config[key].nil?
-          changed = true
-          value = Readline.readline("#{label}: ", true)
-          @project_config[key]  = format_config_value(value)
-        end
-      end
-      if changed
-        File.open("./.pivotalrc", "w") do |file|
-          file.write YAML.dump(@project_config)
-        end
-        @config.merge!(@project_config)
-        #output "Writing config to .pivotalrc"
-      end
-    end
-
-    def format_config_value(value)
-      case value
-      when "y"
-        true
-      when "n"
-        false
-      else
-        value
-      end
-    end
-
-    def load_config_from(path)
-      return {} unless path
-      file = File.join path,'.pivotalrc'
-      if File.exists?(file)
-        YAML.load(File.read(file)) || {}
-      else
-        {}
-      end
-    end
-
-    def project
-      read
-      @project ||= PivotalTracker::Project.find(@config['project_id'])
+      PivotalTracker::Client.use_ssl = true
     end
 
     def me
-      read
       @me ||= @config['me']
     end
 
-    def global_config_path
-      @global_config_path ||= File.expand_path('~')
+    def fetch_all_stories
+      project.stories.all(
+        :owner => me,
+        :state => %w(started finished delivered),
+        :limit => 30
+      )
     end
 
-    def project_config_path
-      @project_config_path ||= find_project_config
+    def find_story_by_id(id)
+      serialize_issue(@tracker.project.stories.find(id))
     end
 
+    def serialize_issue(issue)
+      SerializedIssue.new(issue.id, issue.story_type, issue.name)
+    end
 
-    private
+    protected
+    def project
+      @project ||= PivotalTracker::Project.find(@config['project_id'])
+    end
 
-    def find_project_config
-      dirs = File.split(Dir.pwd)
-      until dirs.empty? || File.exists?(File.join(dirs, '.pivotalrc'))
-        dirs.pop
+  end
+
+
+  class JiraConfiguration < Configuration
+
+    def initialize(config)
+      super(config)
+    end
+
+    def setup_api_client
+      require 'jira'
+      @client ||= JIRA::Client.new(
+        :username     => username,
+        :password     => @config[:password],
+        :site         => @config[:site],
+        :context_path => '',
+        :auth_type    => :basic,
+      )
+    end
+
+    def client
+      @client
+    end
+
+    def username
+      @username ||= @config[:username]
+    end
+
+    def fetch_all_stories
+      client.Issue.jql("assignee=#{username} and status not in (done) and project = #{@config[:project_id]}")
+    end
+
+    def find_story_by_id(key)
+      if key.to_i.to_s == key.to_s # no project_id in key
+        key = [@config[:project_id], key].join("-")
       end
-      if dirs.empty? || File.join(dirs, '.pivotalrc')==global_config_path
+      serialize_issue(client.Issue.find(key))
+    rescue JIRA::HTTPError => e
+      if e.code.to_i == 404
         nil
       else
-        File.join(dirs)
+        raise e
       end
     end
+
+    def serialize_issue(issue)
+      SerializedIssue.new(issue.key, issue.issuetype.name, issue.summary)
     end
+
   end
 
   class Error < StandardError
@@ -251,4 +332,26 @@ class GitStoryid
 
   class RefetchStories < StandardError
   end
+
+  TRACKER_CONFIG = {
+    pivotal: {
+      class: PivotalConfiguration,
+      options: {
+        :api_token => "Api token (https://www.pivotaltracker.com/profile)",
+        :me => "Your pivotal initials (e.g. BG)",
+        :project_id => "Project ID",
+      },
+    },
+    jira: {
+      class: JiraConfiguration,
+      options: {
+        :site         => 'Site URL',
+        project_id: "Project ID",
+        :username     => 'Username',
+        :password     => 'Password',
+      }
+    }
+  }
+
+
 end

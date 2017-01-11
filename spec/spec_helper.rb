@@ -3,6 +3,8 @@ $LOAD_PATH.unshift(File.dirname(__FILE__))
 require 'rspec'
 require "webmock"
 require "hashie"
+require "pivotal_tracker"
+require 'jira-ruby'
 require 'git-storyid'
 
 # Requires supporting files with custom matchers and macros, etc,
@@ -13,5 +15,5 @@ WebMock.disable_net_connect!
 
 RSpec.configure do |config|
   config.mock_with :mocha
-  
+
 end
