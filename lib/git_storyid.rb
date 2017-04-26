@@ -286,7 +286,7 @@ class GitStoryid
     end
 
     def setup_api_client
-      require 'jira'
+      require 'jira-ruby'
       @client ||= JIRA::Client.new(
         :username     => username,
         :password     => @config[:password],
