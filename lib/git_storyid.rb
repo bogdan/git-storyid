@@ -273,7 +273,7 @@ class GitStoryid
 
     protected
     def project
-      @project ||= @client.project(@config['project_id'])
+      @project ||= @client.project(@config[:project_id])
     end
 
   end
