@@ -1,6 +1,6 @@
 source "http://rubygems.org"
 
-gem "pivotal-tracker"
+gem "tracker_api"
 gem "jira-ruby"
 
 group :development do

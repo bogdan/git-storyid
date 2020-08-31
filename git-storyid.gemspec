@@ -68,7 +68,7 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<http_logger>.freeze, [">= 0"])
     end
   else
-    s.add_dependency(%q<pivotal-tracker>.freeze, [">= 0"])
+    s.add_dependency(%q<tracker_api>.freeze, [">= 0"])
     s.add_dependency(%q<jira-ruby>.freeze, [">= 0"])
     s.add_dependency(%q<webmock>.freeze, [">= 0"])
     s.add_dependency(%q<debugger>.freeze, [">= 0"])

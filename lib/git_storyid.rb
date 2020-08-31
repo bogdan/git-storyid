@@ -246,9 +246,8 @@ class GitStoryid
   class PivotalConfiguration < Configuration
 
     def setup_api_client
-      require "pivotal_tracker"
-      PivotalTracker::Client.token = @config['api_token']
-      PivotalTracker::Client.use_ssl = true
+      require "tracker_api"
+      @client ||= TrackerApi::Client.new(token: @config[:api_token])
     end
 
     def me
@@ -256,15 +255,16 @@ class GitStoryid
     end
 
     def fetch_all_stories
-      project.stories.all(
-        :owner => me,
-        :state => %w(started finished delivered),
+      project.stories(
+        filter: "mywork:#{me} state:started,finished,delivered",
+        # :owner => me,
+        # :with_state => %w(started finished delivered),
         :limit => 30
       )
     end
 
     def find_story_by_id(id)
-      serialize_issue(@tracker.project.stories.find(id))
+      serialize_issue(project.story(id))
     end
 
     def serialize_issue(issue)
@@ -273,7 +273,7 @@ class GitStoryid
 
     protected
     def project
-      @project ||= PivotalTracker::Project.find(@config['project_id'])
+      @project ||= @client.project(@config['project_id'])
     end
 
   end

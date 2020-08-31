@@ -3,7 +3,7 @@ $LOAD_PATH.unshift(File.dirname(__FILE__))
 require 'rspec'
 require "webmock"
 require "hashie"
-require "pivotal_tracker"
+require "tracker_api"
 require 'jira-ruby'
 require 'git-storyid'
 
