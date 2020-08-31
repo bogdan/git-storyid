@@ -8,7 +8,7 @@ group :development do
   gem "debugger", :platform => "ruby_19"
   gem "mocha"
   gem "rspec"
-  gem "juwelier"
+  gem "juwelier", github: 'flajann2/juwelier'
   gem "hashie"
   gem "pry-byebug", require: false
   gem "http_logger"

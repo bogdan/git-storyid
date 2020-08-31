@@ -1,3 +1,20 @@
+GIT
+  remote: git://github.com/flajann2/juwelier.git
+  revision: de59d5a2ddea00c1f18957ab62129c1c141acce1
+  specs:
+    juwelier (2.4.9)
+      builder
+      bundler
+      git
+      github_api
+      highline
+      kamelcase (~> 0)
+      nokogiri
+      psych
+      rake
+      rdoc
+      semver2
+
 GEM
   remote: http://rubygems.org/
   specs:
@@ -61,18 +78,6 @@ GEM
       atlassian-jwt
       multipart-post
       oauth (~> 0.5, >= 0.5.0)
-    juwelier (2.4.9)
-      builder
-      bundler
-      git
-      github_api
-      highline
-      kamelcase (~> 0)
-      nokogiri
-      psych
-      rake
-      rdoc
-      semver2
     jwt (2.1.0)
     kamelcase (0.0.2)
       semver2 (~> 3)
@@ -157,7 +162,7 @@ DEPENDENCIES
   hashie
   http_logger
   jira-ruby
-  juwelier
+  juwelier!
   mocha
   pry-byebug
   rspec
