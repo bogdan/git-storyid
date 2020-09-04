@@ -251,7 +251,7 @@ class GitStoryid
     end
 
     def me
-      @me ||= @config['me']
+      @me ||= @config[:me]
     end
 
     def fetch_all_stories

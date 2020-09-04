@@ -1,6 +1,6 @@
 # git-storyid
 
-Helps to attach pivotal story id to git commit
+Helps to attach [Pivotal Tracker](https://www.pivotaltracker.com/) story id to git commit.
 
 ## Installation
 
